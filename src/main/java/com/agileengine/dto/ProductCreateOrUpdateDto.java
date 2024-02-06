@@ -12,9 +12,9 @@ public record ProductCreateOrUpdateDto(
 ) {
   public ProductCreateOrUpdateDto {
     Preconditions.checkNotNull(name);
-    Preconditions.checkArgument(name.isEmpty());
+    Preconditions.checkArgument(!name.isEmpty());
     Preconditions.checkNotNull(code);
-    Preconditions.checkArgument(code.isEmpty());
+    Preconditions.checkArgument(!code.isEmpty());
     Preconditions.checkArgument(price.compareTo(BigDecimal.ZERO) > 0);
   }
 }

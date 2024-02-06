@@ -3,6 +3,9 @@ package com.agileengine.service;
 import com.agileengine.dto.*;
 import com.agileengine.model.Product;
 import com.agileengine.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,11 +30,12 @@ public class ProductService {
         return productDtoMapper.apply(productFromDb);
     }
 
-    public List<ProductDto> getProducts() {
-        return productRepository.findAll()
-            .stream()
+    public Page<ProductDto> getProducts(Pageable pageable) {
+        Page<Product> productPage = productRepository.findAll(pageable);
+        List<ProductDto> products = productPage.getContent().stream()
             .map(productDtoMapper)
             .collect(Collectors.toList());
+        return new PageImpl<>(products, pageable, productPage.getTotalElements());
     }
 
     public ProductIdDto create(ProductCreateOrUpdateDto dto) {
