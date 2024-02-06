@@ -14,6 +14,10 @@ public class Product {
 
     private String name;
 
+    private String code;
+
+    private String description;
+
     private BigDecimal price;
 
     public long getId() {
@@ -32,6 +36,22 @@ public class Product {
         this.name = name;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -43,8 +63,10 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, BigDecimal price) {
+    public Product(String name, String code, String description, BigDecimal price) {
         this.name = name;
+        this.code = code;
+        this.description = description;
         this.price = price;
     }
 
@@ -56,13 +78,19 @@ public class Product {
         Product product = (Product) o;
 
         if (id != product.id) return false;
-        return Objects.equals(name, product.name);
+        if (!Objects.equals(name, product.name)) return false;
+        if (!Objects.equals(code, product.code)) return false;
+        if (!Objects.equals(description, product.description)) return false;
+        return Objects.equals(price, product.price);
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (code != null ? code.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
     }
 
@@ -71,6 +99,8 @@ public class Product {
         return "Product{" +
             "id=" + id +
             ", name='" + name + '\'' +
+            ", code='" + code + '\'' +
+            ", description='" + description + '\'' +
             ", price=" + price +
             '}';
     }
