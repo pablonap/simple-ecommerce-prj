@@ -1,12 +1,9 @@
 package com.agileengine.model;
 
-import com.agileengine.dto.OrderItemCreateOrUpdateDto;
-import com.agileengine.dto.OrderUpdateDto;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.RequestValidationException;
 import com.google.common.base.Preconditions;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,6 +36,9 @@ public class OrderItem {
     }
 
     public void updateOrderItem(Product product, Order order, int quantity) {
+        if (product == null || order == null || quantity == 0) {
+            throw new RequestValidationException(ExceptionMessages.INVALID_ORDER_OPERATION.getMessage());
+        }
         this.setProduct(product);
         this.setOrder(order);
         this.setQuantity(quantity);

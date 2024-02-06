@@ -1,12 +1,15 @@
 package com.agileengine.dto;
 
-import com.google.common.base.Preconditions;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.RequestValidationException;
 
 public record OrderCreateDto(
     String shippingAddress
 ) {
-  public OrderCreateDto {
-    Preconditions.checkNotNull(shippingAddress);
-    Preconditions.checkArgument(!shippingAddress.isEmpty());
-  }
+    public OrderCreateDto {
+        if (shippingAddress == null
+            || shippingAddress.isEmpty()) {
+            throw new RequestValidationException(ExceptionMessages.INVALID_ORDER_DATA.getMessage());
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package com.agileengine.service;
 
 import com.agileengine.dto.*;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.ResourceNotFoundException;
 import com.agileengine.model.Order;
 import com.agileengine.model.OrderItem;
 import com.agileengine.model.Product;
@@ -36,8 +38,10 @@ public class OrderItemService {
     }
 
     public OrderItemIdDto create(OrderItemCreateOrUpdateDto dto) {
-        Product product = productRepository.findById(dto.productId()).orElseThrow(IllegalArgumentException::new);
-        Order order = orderRepository.findById(dto.orderId()).orElseThrow(IllegalArgumentException::new);
+        Product product = productRepository.findById(dto.productId())
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
+        Order order = orderRepository.findById(dto.orderId())
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         OrderItem orderItem = OrderItem.createNewOrderItem(product, order, dto.quantity());
 
         OrderItem savedOrderItem = orderItemRepository.save(orderItem);
@@ -45,9 +49,12 @@ public class OrderItemService {
     }
 
     public OrderItemIdDto update(long orderItemId, OrderItemCreateOrUpdateDto dto) {
-        Product product = productRepository.findById(dto.productId()).orElseThrow(IllegalArgumentException::new);
-        Order order = orderRepository.findById(dto.orderId()).orElseThrow(IllegalArgumentException::new);
-        OrderItem orderItemFromDb = orderItemRepository.findById(orderItemId).orElseThrow(IllegalArgumentException::new);
+        Product product = productRepository.findById(dto.productId())
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
+        Order order = orderRepository.findById(dto.orderId())
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
+        OrderItem orderItemFromDb = orderItemRepository.findById(orderItemId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
         orderItemFromDb.updateOrderItem(product, order, dto.quantity());
 
@@ -56,7 +63,8 @@ public class OrderItemService {
     }
 
     public OrderItemDto getById(long orderItemId) {
-        OrderItem orderItemFromDb = orderItemRepository.findById(orderItemId).orElseThrow(IllegalArgumentException::new);
+        OrderItem orderItemFromDb = orderItemRepository.findById(orderItemId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         return orderItemToOrderItemDtoMapper.apply(orderItemFromDb);
     }
 
@@ -69,7 +77,8 @@ public class OrderItemService {
     }
 
     public void remove(long orderItemId) {
-        orderItemRepository.findById(orderItemId).orElseThrow(IllegalArgumentException::new);
+        orderItemRepository.findById(orderItemId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         orderItemRepository.deleteById(orderItemId);
     }
 }

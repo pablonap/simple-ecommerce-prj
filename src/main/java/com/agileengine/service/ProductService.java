@@ -1,6 +1,8 @@
 package com.agileengine.service;
 
 import com.agileengine.dto.*;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.ResourceNotFoundException;
 import com.agileengine.model.Product;
 import com.agileengine.repository.ProductRepository;
 import org.springframework.data.domain.Page;
@@ -26,7 +28,8 @@ public class ProductService {
     }
 
     public ProductDto getById(long productId) {
-        Product productFromDb = productRepository.findById(productId).orElseThrow(IllegalArgumentException::new);
+        Product productFromDb = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         return productDtoMapper.apply(productFromDb);
     }
 
@@ -39,15 +42,16 @@ public class ProductService {
     }
 
     public ProductIdDto create(ProductCreateOrUpdateDto dto) {
-        Product product = new Product(dto.name(), dto.code(), dto.description(), dto.price());
+        var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
         Product savedProduct = productRepository.save(product);
         return productIdDtoMapper.apply(savedProduct);
     }
 
     public ProductIdDto update(long productId, ProductCreateOrUpdateDto dto) {
-        Product productFromDb = productRepository.findById(productId).orElseThrow(IllegalArgumentException::new);
+        Product productFromDb = productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
-        Product product = new Product(dto.name(), dto.code(), dto.description(), dto.price());
+        var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
         product.setId(productFromDb.getId());
 
         Product savedProduct = productRepository.save(product);
@@ -55,7 +59,8 @@ public class ProductService {
     }
 
     public void remove(long productId) {
-        productRepository.findById(productId).orElseThrow(IllegalArgumentException::new);
+        productRepository.findById(productId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         productRepository.deleteById(productId);
     }
 }

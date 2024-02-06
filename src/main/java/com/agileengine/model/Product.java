@@ -63,11 +63,14 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, String code, String description, BigDecimal price) {
-        this.name = name;
-        this.code = code;
-        this.description = description;
-        this.price = price;
+    public static Product createNewProduct(String name, String code, String description, BigDecimal price) {
+        final var product = new Product();
+        product.setName(name);
+        product.setCode(code);
+        product.setDescription(description);
+        product.setPrice(price);
+
+        return product;
     }
 
     @Override

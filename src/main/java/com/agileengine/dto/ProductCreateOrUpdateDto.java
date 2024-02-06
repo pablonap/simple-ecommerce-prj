@@ -1,6 +1,7 @@
 package com.agileengine.dto;
 
-import com.google.common.base.Preconditions;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.RequestValidationException;
 
 import java.math.BigDecimal;
 
@@ -10,11 +11,13 @@ public record ProductCreateOrUpdateDto(
     String description,
     BigDecimal price
 ) {
-  public ProductCreateOrUpdateDto {
-    Preconditions.checkNotNull(name);
-    Preconditions.checkArgument(!name.isEmpty());
-    Preconditions.checkNotNull(code);
-    Preconditions.checkArgument(!code.isEmpty());
-    Preconditions.checkArgument(price.compareTo(BigDecimal.ZERO) > 0);
-  }
+    public ProductCreateOrUpdateDto {
+        if (name == null
+            || name.isEmpty()
+            || code == null
+            || code.isEmpty()
+            || price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RequestValidationException(ExceptionMessages.INVALID_PRODUCT_DATA.getMessage());
+        }
+    }
 }

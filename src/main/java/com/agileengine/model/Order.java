@@ -1,6 +1,8 @@
 package com.agileengine.model;
 
 import com.agileengine.dto.OrderUpdateDto;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.InconsistentDataException;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
@@ -50,6 +52,10 @@ public class Order {
     }
 
     public BigDecimal calculateTotalAmount() {
+        if (this.getOrderItems() == null
+            || this.getOrderItems().size() > 0) {
+            throw new InconsistentDataException(ExceptionMessages.NO_ORDER_ITEMS.getMessage());
+        }
         return this.getOrderItems()
             .stream()
             .map(oi -> oi.getProduct().getPrice().multiply(BigDecimal.valueOf(oi.getQuantity())))

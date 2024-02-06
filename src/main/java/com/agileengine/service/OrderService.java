@@ -1,6 +1,9 @@
 package com.agileengine.service;
 
 import com.agileengine.dto.*;
+import com.agileengine.exception.ExceptionMessages;
+import com.agileengine.exception.RequestValidationException;
+import com.agileengine.exception.ResourceNotFoundException;
 import com.agileengine.model.Order;
 import com.agileengine.model.State;
 import com.agileengine.repository.OrderRepository;
@@ -34,17 +37,16 @@ public class OrderService {
     }
 
     public OrderIdDto update(long orderId, OrderUpdateDto dto) {
-        Order orderFromDb = orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
+        Order orderFromDb = orderRepository.findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
         if (orderFromDb.getState().equals(State.FINISHED)) {
-            throw new IllegalArgumentException();
+            throw new RequestValidationException(ExceptionMessages.ORDER_ALREADY_FINISHED.getMessage());
         }
 
         orderFromDb.updateOrder(dto);
 
-        if (dto.state().equals(State.FINISHED)
-            && orderFromDb.getOrderItems() != null
-            && orderFromDb.getOrderItems().size() > 0) {
+        if (dto.state().equals(State.FINISHED)) {
             orderFromDb.setTotalAmount(orderFromDb.calculateTotalAmount());
         }
 
@@ -53,7 +55,8 @@ public class OrderService {
     }
 
     public OrderDto getById(long orderId) {
-        Order orderFromDb = orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
+        Order orderFromDb = orderRepository.findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         return orderToOrderDtoMapper.apply(orderFromDb);
     }
 
@@ -66,7 +69,8 @@ public class OrderService {
     }
 
     public void remove(long orderId) {
-        orderRepository.findById(orderId).orElseThrow(IllegalArgumentException::new);
+        orderRepository.findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         orderRepository.deleteById(orderId);
     }
 }
