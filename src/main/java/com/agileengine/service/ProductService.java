@@ -28,7 +28,7 @@ public class ProductService {
     }
 
     public ProductDto getById(long productId) {
-        Product productFromDb = productRepository.findById(productId)
+        final var productFromDb = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         return productDtoMapper.apply(productFromDb);
     }
@@ -42,16 +42,16 @@ public class ProductService {
     }
 
     public ProductIdDto create(ProductCreateOrUpdateDto dto) {
-        var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
-        Product savedProduct = productRepository.save(product);
+        final var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
+        final var savedProduct = productRepository.save(product);
         return productIdDtoMapper.apply(savedProduct);
     }
 
     public ProductIdDto update(long productId, ProductCreateOrUpdateDto dto) {
-        Product productFromDb = productRepository.findById(productId)
+        final var productFromDb = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
-        var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
+        final var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
         product.setId(productFromDb.getId());
 
         Product savedProduct = productRepository.save(product);
