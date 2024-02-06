@@ -1,0 +1,14 @@
+version: "3"
+services:
+  postgresdb: 
+    container_name: postgresdb
+    image: postgres
+    volumes:
+      - /home/pablonap/intellij_java_workspace/simple-ecommerce-prj/db:/var/lib/postgresql/data
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_DB: simple-ecommerce-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+
