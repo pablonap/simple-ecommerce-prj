@@ -1,7 +1,12 @@
 package com.agileengine.model;
 
+import com.agileengine.dto.OrderItemCreateOrUpdateDto;
+import com.agileengine.dto.OrderUpdateDto;
 import com.google.common.base.Preconditions;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
 
 import static java.util.Objects.requireNonNull;
 
@@ -16,13 +21,27 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
     private Product product;
 
     private int quantity;
 
     OrderItem() {
+    }
+
+    public static OrderItem createNewOrderItem(Product product, Order order, int quantity) {
+        final var orderItem = new OrderItem();
+        orderItem.setProduct(product);
+        orderItem.setOrder(order);
+        orderItem.setQuantity(quantity);
+        return orderItem;
+    }
+
+    public void updateOrderItem(Product product, Order order, int quantity) {
+        this.setProduct(product);
+        this.setOrder(order);
+        this.setQuantity(quantity);
     }
 
     public long getId() {
@@ -51,11 +70,6 @@ public class OrderItem {
 
     public int getQuantity() {
         return quantity;
-    }
-
-    public void addQuantity(int quantity) {
-        Preconditions.checkArgument(quantity > 0);
-        this.quantity += quantity;
     }
 
     public void setQuantity(int quantity) {

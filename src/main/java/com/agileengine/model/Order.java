@@ -1,5 +1,6 @@
 package com.agileengine.model;
 
+import com.agileengine.dto.OrderUpdateDto;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
@@ -16,26 +17,43 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name="create_at")
+    @Column(name = "create_at")
     private LocalDateTime createAt;
 
-    @Column(name="shipping_address")
+    @Column(name = "shipping_address")
     private String shippingAddress;
 
-    @Column(name="total_amount")
+    @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems;
 
+    @Enumerated(EnumType.STRING)
+    private State state;
+
     public Order() {
     }
 
-    public Order(LocalDateTime createAt, String shippingAddress, BigDecimal totalAmount, Set<OrderItem> orderItems) {
-        this.createAt = createAt;
-        this.shippingAddress = shippingAddress;
-        this.totalAmount = totalAmount;
-        this.orderItems = orderItems;
+    public static Order createNewOrder(String shippingAddress) {
+        final var order = new Order();
+        order.setCreateAt(LocalDateTime.now());
+        order.setShippingAddress(shippingAddress);
+        order.setOrderItems(new HashSet<>());
+        order.setState(State.ON_PROCESS);
+        return order;
+    }
+
+    public void updateOrder(OrderUpdateDto dto) {
+        this.setShippingAddress(dto.shippingAddress());
+        this.setState(dto.state());
+    }
+
+    public BigDecimal calculateTotalAmount() {
+        return this.getOrderItems()
+            .stream()
+            .map(oi -> oi.getProduct().getPrice().multiply(BigDecimal.valueOf(oi.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public long getId() {
@@ -76,6 +94,14 @@ public class Order {
 
     public void setOrderItems(@NonNull Set<OrderItem> orderItems) {
         this.orderItems = new HashSet<>(orderItems);
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     @Override
