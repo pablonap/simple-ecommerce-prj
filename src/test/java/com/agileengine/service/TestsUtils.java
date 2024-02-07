@@ -1,6 +1,8 @@
 package com.agileengine.service;
 
 import com.agileengine.dto.ProductCreateOrUpdateDto;
+import com.agileengine.dto.ProductDto;
+import com.agileengine.dto.ProductIdDto;
 import com.agileengine.model.Product;
 
 import java.math.BigDecimal;
@@ -29,7 +31,13 @@ public final class TestsUtils {
         return product;
     }
 
-//    public static OrderRequestDto orderRequestDtoOf(long cartId, String shippingAddress) {
-//        return new OrderRequestDto(cartId, shippingAddress);
-//    }
+    public static ProductIdDto productIdDtoOf(Long id) {
+        final var productIdDto = new ProductIdDto(id);
+        return productIdDto;
+    }
+
+    public static ProductDto productDtoOf(Long id, String name, String code, String description, BigDecimal price) {
+        final var productDto = new ProductDto(id, name, code, description, price);
+        return productDto;
+    }
 }
