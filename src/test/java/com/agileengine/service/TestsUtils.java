@@ -78,6 +78,15 @@ public final class TestsUtils {
         return orderItem;
     }
 
+    public static OrderItem orderItemOf(long id, Product product, Order order, int quantity) {
+        final var orderItem = new OrderItem();
+        orderItem.setId(id);
+        orderItem.setProduct(product);
+        orderItem.setOrder(order);
+        orderItem.setQuantity(quantity);
+        return orderItem;
+    }
+
     public static OrderDto orderDtoOf(
         long id,
         LocalDateTime createAt,
@@ -88,4 +97,13 @@ public final class TestsUtils {
     ) {
         return new OrderDto(id, createAt, shippingAddress, totalAmount, orderItems, state);
     }
+
+    public static OrderItemCreateOrUpdateDto orderItemCreateOrUpdateDtoOf(long productId, long orderId, int quantity) {
+       return new OrderItemCreateOrUpdateDto(productId, orderId, quantity);
+    }
+
+    public static OrderItemIdDto orderItemIdDtoOf(long orderItemId) {
+        return new OrderItemIdDto(orderItemId);
+    }
+
 }

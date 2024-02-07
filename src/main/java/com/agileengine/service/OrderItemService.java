@@ -37,26 +37,26 @@ public class OrderItemService {
         this.orderItemToOrderItemDtoMapper = orderItemToOrderItemDtoMapper;
     }
 
-    public OrderItemIdDto create(OrderItemCreateOrUpdateDto dto) {
-        Product product = productRepository.findById(dto.productId())
+    public OrderItemIdDto create(OrderItemCreateOrUpdateDto request) {
+        Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
-        Order order = orderRepository.findById(dto.orderId())
+        Order order = orderRepository.findById(request.orderId())
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
-        OrderItem orderItem = OrderItem.createNewOrderItem(product, order, dto.quantity());
+        OrderItem orderItem = OrderItem.createNewOrderItem(product, order, request.quantity());
 
         OrderItem savedOrderItem = orderItemRepository.save(orderItem);
         return new OrderItemIdDto(orderItemToLongMapper.apply(savedOrderItem));
     }
 
-    public OrderItemIdDto update(long orderItemId, OrderItemCreateOrUpdateDto dto) {
-        Product product = productRepository.findById(dto.productId())
+    public OrderItemIdDto update(long orderItemId, OrderItemCreateOrUpdateDto request) {
+        Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
-        Order order = orderRepository.findById(dto.orderId())
+        Order order = orderRepository.findById(request.orderId())
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         OrderItem orderItemFromDb = orderItemRepository.findById(orderItemId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
-        orderItemFromDb.updateOrderItem(product, order, dto.quantity());
+        orderItemFromDb.updateOrderItem(product, order, request.quantity());
 
         orderItemRepository.save(orderItemFromDb);
         return new OrderItemIdDto(orderItemToLongMapper.apply(orderItemFromDb));

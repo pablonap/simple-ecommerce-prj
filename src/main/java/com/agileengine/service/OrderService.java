@@ -30,13 +30,13 @@ public class OrderService {
         this.orderToOrderDtoMapper = orderToOrderDtoMapper;
     }
 
-    public OrderIdDto create(OrderCreateDto dto) {
-        Order order = Order.createNewOrder(dto.shippingAddress());
+    public OrderIdDto create(OrderCreateDto request) {
+        Order order = Order.createNewOrder(request.shippingAddress());
         Order savedOrder = orderRepository.save(order);
         return new OrderIdDto(orderToLongMapper.apply(savedOrder));
     }
 
-    public OrderIdDto update(long orderId, OrderUpdateDto dto) {
+    public OrderIdDto update(long orderId, OrderUpdateDto request) {
         Order orderFromDb = orderRepository.findById(orderId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
@@ -44,9 +44,9 @@ public class OrderService {
             throw new RequestValidationException(ExceptionMessages.ORDER_ALREADY_FINISHED.getMessage());
         }
 
-        orderFromDb.updateOrder(dto);
+        orderFromDb.updateOrder(request);
 
-        if (dto.state().equals(State.FINISHED)) {
+        if (request.state().equals(State.FINISHED)) {
             orderFromDb.setTotalAmount(orderFromDb.calculateTotalAmount());
         }
 
