@@ -50,8 +50,8 @@ public class OrderService {
             orderFromDb.setTotalAmount(orderFromDb.calculateTotalAmount());
         }
 
-        Order savedOrder = orderRepository.save(orderFromDb);
-        return new OrderIdDto(orderToLongMapper.apply(savedOrder));
+        Order updatedOrder = orderRepository.save(orderFromDb);
+        return new OrderIdDto(orderToLongMapper.apply(updatedOrder));
     }
 
     public OrderDto getById(long orderId) {

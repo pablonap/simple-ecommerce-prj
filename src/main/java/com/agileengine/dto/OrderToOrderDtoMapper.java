@@ -18,6 +18,7 @@ public record OrderToOrderDtoMapper(OrderItemToLongMapper orderItemToLongMapper)
             .collect(Collectors.toSet());
 
         return new OrderDto(
+            order.getId(),
             order.getCreateAt(),
             order.getShippingAddress(),
             order.getTotalAmount(),

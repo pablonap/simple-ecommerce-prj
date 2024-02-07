@@ -24,7 +24,7 @@ public class OrderItem {
 
     private int quantity;
 
-    OrderItem() {
+    public OrderItem() {
     }
 
     public static OrderItem createNewOrderItem(Product product, Order order, int quantity) {

@@ -53,7 +53,7 @@ public class Order {
 
     public BigDecimal calculateTotalAmount() {
         if (this.getOrderItems() == null
-            || this.getOrderItems().size() > 0) {
+            || this.getOrderItems().isEmpty()) {
             throw new InconsistentDataException(ExceptionMessages.NO_ORDER_ITEMS.getMessage());
         }
         return this.getOrderItems()

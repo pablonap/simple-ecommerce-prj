@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public record OrderDto (
+    long orderId,
     LocalDateTime createAt,
     String shippingAddress,
     BigDecimal totalAmount,
