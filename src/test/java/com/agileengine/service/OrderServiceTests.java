@@ -1,8 +1,10 @@
 package com.agileengine.service;
 
+import com.agileengine.TestsUtils;
 import com.agileengine.dto.OrderIdDto;
 import com.agileengine.dto.OrderToLongMapper;
 import com.agileengine.dto.OrderToOrderDtoMapper;
+import com.agileengine.exception.InconsistentDataException;
 import com.agileengine.exception.RequestValidationException;
 import com.agileengine.exception.ResourceNotFoundException;
 import com.agileengine.model.Order;
@@ -140,6 +142,35 @@ public class OrderServiceTests {
         assertThat(capturedOrder.getShippingAddress()).isEqualTo(NEW_SHIPPING_ADDRESS);
         assertThat(capturedOrder.getState()).isEqualTo(FINISHED_STATE);
         assertThat(capturedOrder.getTotalAmount()).isEqualTo(CALCULATED_TOTAL_AMOUNT);
+    }
+
+    @Test
+    void itShouldThrowExceptionWhenThereAreNoOrderItemsWhenTryingToUpdate() {
+        // given
+        final Long ORDER_ID = 1L;
+        final LocalDateTime DATE_TIME = LocalDateTime.now();
+        final String PREVIOUS_SHIPPING_ADDRESS = "123 street";
+        final BigDecimal TOTAL_AMOUNT = BigDecimal.valueOf(0);
+        final State ON_PROCESS_STATE = State.ON_PROCESS;
+        final State FINISHED_STATE = State.FINISHED;
+        final String NEW_SHIPPING_ADDRESS = "321 street";
+
+        final Set<OrderItem> ORDER_ITEMS = Set.of();
+        final var orderUpdateDto = TestsUtils.orderUpdateDtoOf(NEW_SHIPPING_ADDRESS, FINISHED_STATE);
+
+        final var orderFromDb = TestsUtils.orderOf(
+            ORDER_ID,
+            DATE_TIME,
+            PREVIOUS_SHIPPING_ADDRESS,
+            TOTAL_AMOUNT,
+            ORDER_ITEMS,
+            ON_PROCESS_STATE);
+
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(orderFromDb));
+
+        // when & then
+        assertThrows(InconsistentDataException.class, () -> underTest.update(ORDER_ID, orderUpdateDto));
+        verify(orderRepository, never()).deleteById(ArgumentMatchers.any());
     }
 
     @Test

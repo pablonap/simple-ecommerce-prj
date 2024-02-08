@@ -1,5 +1,7 @@
 package com.agileengine.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.agileengine.dto.*;
 import com.agileengine.exception.ExceptionMessages;
 import com.agileengine.exception.ResourceNotFoundException;
@@ -18,6 +20,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductIdDtoMapper productIdDtoMapper;
     private final ProductDtoMapper productDtoMapper;
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository,
                           ProductIdDtoMapper productIdDtoMapper,
@@ -28,26 +31,33 @@ public class ProductService {
     }
 
     public ProductDto getById(long productId) {
+        logger.info("Getting product by ID: {}", productId);
         final var productFromDb = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
+        logger.info("Retrieved product: {}", productFromDb);
         return productDtoMapper.apply(productFromDb);
     }
 
     public Page<ProductDto> getProducts(Pageable pageable) {
+        logger.info("Getting products...");
         Page<Product> productPage = productRepository.findAll(pageable);
         List<ProductDto> products = productPage.getContent().stream()
             .map(productDtoMapper)
             .collect(Collectors.toList());
+        logger.info("Retrieved {} products", products.size());
         return new PageImpl<>(products, pageable, productPage.getTotalElements());
     }
 
     public ProductIdDto create(ProductCreateOrUpdateDto dto) {
+        logger.info("Creating product...");
         final var product = Product.createNewProduct(dto.name(), dto.code(), dto.description(), dto.price());
         final var savedProduct = productRepository.save(product);
+        logger.info("Product created successfully with ID: {}", savedProduct.getId());
         return productIdDtoMapper.apply(savedProduct);
     }
 
     public ProductIdDto update(long productId, ProductCreateOrUpdateDto dto) {
+        logger.info("Updating product...");
         final var productFromDb = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
 
@@ -55,12 +65,15 @@ public class ProductService {
         product.setId(productFromDb.getId());
 
         Product savedProduct = productRepository.save(product);
+        logger.info("Product successfully updated with ID: {}", savedProduct.getId());
         return productIdDtoMapper.apply(savedProduct);
     }
 
     public void remove(long productId) {
+        logger.info("Removing product with ID: {}", productId);
         productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException(ExceptionMessages.RESOURCE_NOT_FOUND.getMessage()));
         productRepository.deleteById(productId);
+        logger.info("Product removed");
     }
 }

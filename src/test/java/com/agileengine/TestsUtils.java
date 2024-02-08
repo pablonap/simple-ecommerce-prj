@@ -1,4 +1,4 @@
-package com.agileengine.service;
+package com.agileengine;
 
 import com.agileengine.dto.*;
 import com.agileengine.model.Order;
@@ -102,8 +102,7 @@ public final class TestsUtils {
        return new OrderItemCreateOrUpdateDto(productId, orderId, quantity);
     }
 
-    public static OrderItemIdDto orderItemIdDtoOf(long orderItemId) {
-        return new OrderItemIdDto(orderItemId);
+    public static OrderItemDto orderItemDtoOf(long productId, long orderId, int quantity) {
+        return new OrderItemDto(productId, orderId, quantity);
     }
-
 }
